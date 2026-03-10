@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click to Call UK</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+    }
+    h1 { font-size: 20px; margin-bottom: 8px; color: #1a1a1a; }
+    p { font-size: 14px; color: #666; margin-bottom: 32px; }
+    button {
+      background: #0066ff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 48px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    button:hover { background: #0052cc; }
+    button:active { background: #003d99; }
+    button:disabled { background: #999; cursor: not-allowed; }
+    #status {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #333;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Call UK Number</h1>
+    <p>Your iPhone will ring first, then you'll be connected.</p>
+    <button id="callBtn" onclick="callMe()">Call Now</button>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    async function callMe() {
+      const btn = document.getElementById('callBtn');
+      const status = document.getElementById('status');
+
+      btn.disabled = true;
+      btn.textContent = 'Calling...';
+      status.textContent = '';
+
+      try {
+        const res = await fetch('/call', { method: 'POST' });
+        const data = await res.json();
+
+        if (res.ok) {
+          status.textContent = 'Your iPhone should ring in a few seconds.';
+        } else {
+          status.textContent = 'Error: ' + (data.detail || 'Something went wrong');
+        }
+      } catch (e) {
+        status.textContent = 'Error: Could not reach server';
+      }
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Call Now';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

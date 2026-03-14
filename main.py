@@ -1,8 +1,12 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic_settings import BaseSettings
 from twilio.rest import Client
+
+BASE_DIR = Path(__file__).parent
 
 
 class Settings(BaseSettings):
@@ -23,7 +27,7 @@ app = FastAPI(title="Twilio Click-to-Call")
 
 @app.get("/")
 async def index():
-    return FileResponse("static/index.html")
+    return FileResponse(BASE_DIR / "static" / "index.html")
 
 
 @app.post("/call")
@@ -47,4 +51,4 @@ async def make_call():
     return {"status": "calling", "call_sid": call.sid}
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
